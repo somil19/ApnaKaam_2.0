@@ -6,7 +6,7 @@ const initialValue = {
 
   todoTitle: "",
 
-  backendUrl: "http://localhost:5000",
+  backendUrl: import.meta.env.VITE_API_URL || "http://localhost:5000",
 };
 
 const todoFormSlice = createSlice({
