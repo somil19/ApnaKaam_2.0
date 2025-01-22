@@ -8,11 +8,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { setTodos } from "../features/todoSlice";
+import toast, { Toaster } from "react-hot-toast";
+
 function SummaryPage() {
   const dispatch = useDispatch();
   const [overAllPerformance, setOverAllPerformance] = useState(false);
   const [isSave, setIsSave] = useState(false);
   const userName = useSelector((state) => state.signUp.userName);
+  const [updatedName, setUpdatedName] = useState(userName);
   const Todos = useSelector((state) => state.todo.todos);
   const myDayTodos = Todos.filter((todo) => todo.day === "today");
   const myDayCompletedCount = myDayTodos.filter(
@@ -59,7 +62,7 @@ function SummaryPage() {
         const { data } = await axios.get(`${backendUrl}/api/user/userDetails`, {
           headers: { token },
         });
-        // console.log(data);
+
         const { user } = data;
         dispatch(setUserName(user.name));
         dispatch(setUserAvatar({ imgUrl: user.profileImage }));
@@ -70,8 +73,28 @@ function SummaryPage() {
     fetchTodos();
     fetchUser();
   }, []);
+  const handleUpdateName = async () => {
+    setIsSave(!isSave);
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/api/user/update-name`,
+        { userName: updatedName },
+        { headers: { token } }
+      );
+      console.log(data);
+      if (data.success) {
+        toast.success(data.message);
+        dispatch(setUserName(updatedName));
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error("Error updating name:", error.message);
+    }
+  };
   return (
     <div className="min-h-screen flex items-center justify-center py-2  bg-gradient-to-br from-purple-200 to-indigo-400">
+      <Toaster />
       <div className="p-10 bg-gray-100 rounded-lg shadow-md md:w-1/2 w-[90%] m-2 md:m-1">
         <h1 className="md:text-4xl text-3xl font-semibold  text-center text-gray-700 tracking-wide">
           Your Profile
@@ -87,26 +110,26 @@ function SummaryPage() {
           <div className="w-full mt-2 p-2 border flex justify-between bg-white border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             <input
               type="text"
-              value={userName}
-              onChange={(e) => {
-                dispatch(setUserName(e.target.value));
-              }}
+              value={updatedName}
+              onChange={(e) => setUpdatedName(e.target.value)}
               readOnly={!isSave}
               className="w-full p-1 focus:outline-none"
             />
-            <button
-              className={`${
-                isSave ? "bg-red-500 " : "bg-green-500"
-              } py-1 px-3 rounded-md text-white`}
-              onClick={() => {
-                if (isSave) {
-                  dispatch(setUserName(userName));
-                }
-                setIsSave(!isSave);
-              }}
-            >
-              {isSave ? "Save" : "Edit"}
-            </button>
+            {!isSave ? (
+              <button
+                className="bg-green-500 py-1 px-3 rounded-md text-white"
+                onClick={() => setIsSave(!isSave)}
+              >
+                Edit
+              </button>
+            ) : (
+              <button
+                className="bg-red-500 py-1 px-3 rounded-md text-white"
+                onClick={handleUpdateName}
+              >
+                Save
+              </button>
+            )}
           </div>
         </div>
         <div className="mb-4">

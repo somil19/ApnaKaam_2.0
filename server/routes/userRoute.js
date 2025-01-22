@@ -8,6 +8,7 @@ import {
   sendResetOtp,
   resetPassword,
   welcomeEmail,
+  updatUserName,
 } from "../controllers/userController.js";
 
 import multer from "multer";
@@ -30,6 +31,7 @@ userRouter.post(
   userAuth,
   updateAvatar
 );
+userRouter.post("/update-name", userAuth, updatUserName);
 userRouter.post("/schedule-email", scheduleEmail);
 userRouter.post("/send-reset-otp", sendResetOtp);
 userRouter.post("/reset-password", resetPassword);

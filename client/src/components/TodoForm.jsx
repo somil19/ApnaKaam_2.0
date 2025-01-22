@@ -48,12 +48,12 @@ export default function TodoForm({ day }) {
       notes,
       reminder: dueReminder,
       todoAddedAt: new Date().toLocaleString("en-US", {
-        month: "short", // "Jan"
-        day: "2-digit", // "16"
-        year: "numeric", // "2025"
-        hour: "2-digit", // "2"
-        minute: "2-digit", // "30"
-        hour12: true, // Use 12-hour format with AM/PM
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
       }),
     };
 
@@ -95,28 +95,23 @@ export default function TodoForm({ day }) {
   const handleReminderSubmit = async () => {
     try {
       await axios.post(`${backendUrl}/api/user/schedule-email`, {
-        toEmail: userEmail, // Replace with the user's email
-        subject: `Reminder: ${title.toUpperCase()}`, // Email subject
-        body: `
-        Namaste ${name},
-        
-        This is a friendly reminder for your task:
-        - Title: ${title.toUpperCase()}
-        - Category: ${category}
-        - Scheduled Time: ${new Date(dueReminder).toLocaleString()}
-        
-        Don't forget to complete your task on time!
-        Stay productive and Have a great day😊   .
-        
-        Best regards, 
-        Your ApnaKaam Team!
-      `,
+        email: userEmail, // Replace with the user's email
+        title,
+        category,
+        name,
         sendTime: dueReminder, // Date & time set by the user
       });
     } catch (error) {
       toast.error("Error scheduling reminder: " + error.message);
       console.error("Error scheduling reminder:", error.message);
     }
+  };
+  const handleSetReminder = () => {
+    const currentTime = new Date();
+    const scheduledTime = new Date(dueReminder);
+    if (scheduledTime < currentTime) {
+      toast.error("Please select a future date and time.");
+    } else toast.success("Reminder email scheduled successfully!");
   };
   return (
     <div
@@ -193,11 +188,9 @@ export default function TodoForm({ day }) {
                   />
                   {/* Set Button */}
                   <button
-                    onClick={() => {
-                      toast.success("Reminder email scheduled successfully!");
-                    }}
+                    onClick={handleSetReminder}
                     type="button"
-                    className="md:px-2 md:py-1   md:bg-green-400 md:text-white md:rounded-3xl md:hover:bg-green-500 text-green-500 focus:outline-none  hover:scale-105 transition-all duration-500"
+                    className="md:px-2 md:py-1   md:bg-green-400 md:text-white md:rounded-3xl md:hover:bg-green-500 text-green-500 focus:outline-none  hover:scale-125 transition-all duration-500"
                   >
                     <FontAwesomeIcon icon={faCheck} />
                   </button>

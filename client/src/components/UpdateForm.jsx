@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faStar as solidStar,
   faXmark,
+  faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as regularStar } from "@fortawesome/free-regular-svg-icons";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
@@ -16,7 +17,7 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 export default function UpdateForm({ todoToUpdate }) {
   const [title, setTitle] = useState(todoToUpdate.title);
-  const [dueReminder, setDueReminder] = useState(todoToUpdate.dueReminder);
+  const [dueReminder, setDueReminder] = useState("");
   const [showRemBtn, setShowRemBtn] = useState(true);
   const [category, setCategory] = useState(todoToUpdate.category);
   const [priority, setPriority] = useState(todoToUpdate.priority);
@@ -24,7 +25,8 @@ export default function UpdateForm({ todoToUpdate }) {
   const backendUrl = useSelector((state) => state.todoForm.backendUrl);
   const token = useSelector((state) => state.signUp.token);
   const dispatch = useDispatch();
-
+  const name = useSelector((state) => state.signUp.userName);
+  const email = useSelector((state) => state.signUp.email);
   //not working in backend but working in frontend
   // const handleUpdateTodo = async (e) => {
   //   e.preventDefault();
@@ -81,6 +83,7 @@ export default function UpdateForm({ todoToUpdate }) {
   const handleUpdateTodo = async (e) => {
     e.preventDefault();
     try {
+      dueReminder && handleReminderSubmit();
       const todoUpdatedAt = new Date().toLocaleString("en-US", {
         month: "short",
         day: "2-digit",
@@ -124,7 +127,27 @@ export default function UpdateForm({ todoToUpdate }) {
       console.error("Error updating todo:", error);
     }
   };
-
+  const handleReminderSubmit = async () => {
+    try {
+      await axios.post(`${backendUrl}/api/user/schedule-email`, {
+        email, // Replace with the user's email
+        title,
+        category,
+        name,
+        sendTime: dueReminder, // Date & time set by the user
+      });
+    } catch (error) {
+      toast.error("Error scheduling reminder: " + error.message);
+      console.error("Error scheduling reminder:", error.message);
+    }
+  };
+  const handleSetReminder = () => {
+    const currentTime = new Date();
+    const scheduledTime = new Date(dueReminder);
+    if (scheduledTime < currentTime) {
+      toast.error("Please select a future date and time.");
+    } else toast.success("Reminder email scheduled successfully!");
+  };
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
       <Toaster />
@@ -176,33 +199,68 @@ export default function UpdateForm({ todoToUpdate }) {
                 />
               </button>
             ) : (
-              <>
-                <label htmlFor="category" className="text-gray-600">
+              // <>
+              //   <label htmlFor="category" className="text-gray-600">
+              //     Add Date and Time
+              //   </label>
+              //   <input
+              //     type="datetime-local"
+              //     id="dueDate"
+              //     name="dueDate"
+              //     value={dueReminder}
+              //     onChange={(e) => setDueReminder(e.target.value)}
+              //     className="flex-1 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              //     style={{
+              //       // Style the calendar picker indicator
+              //       WebkitAppearance: "none", // Disable default appearance
+              //       appearance: "none",
+              //       paddingLeft: "0.5rem", // Adjust padding to prevent overlap with the indicator
+              //       color: "black",
+              //       backgroundColor: "lightblue",
+              //     }}
+              //   />
+              //   <button
+              //     onClick={() => setShowRemBtn(true)}
+              //     className="bg-gray-200 px-2 py-1 rounded-full"
+              //   >
+              //     <FontAwesomeIcon icon={faXmark} />
+              //   </button>
+              // </>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+                {/* Label */}
+                <label htmlFor="category" className="text-gray-600 md:text-sm">
                   Add Date and Time
                 </label>
-                <input
-                  type="datetime-local"
-                  id="dueDate"
-                  name="dueDate"
-                  value={dueReminder}
-                  onChange={(e) => setDueReminder(e.target.value)}
-                  className="flex-1 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  style={{
-                    // Style the calendar picker indicator
-                    WebkitAppearance: "none", // Disable default appearance
-                    appearance: "none",
-                    paddingLeft: "0.5rem", // Adjust padding to prevent overlap with the indicator
-                    color: "black",
-                    backgroundColor: "lightblue",
-                  }}
-                />
-                <button
-                  onClick={() => setShowRemBtn(true)}
-                  className="bg-gray-200 px-2 py-1 rounded-full"
-                >
-                  <FontAwesomeIcon icon={faXmark} />
-                </button>
-              </>
+
+                {/* Input Field */}
+
+                <div className="flex items-center gap-3">
+                  <input
+                    type="datetime-local"
+                    id="dueDate"
+                    name="dueDate"
+                    value={dueReminder || ""}
+                    onChange={(e) => setDueReminder(e.target.value)}
+                    className="flex-1 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  {/* Set Button */}
+                  <button
+                    onClick={handleSetReminder}
+                    type="button"
+                    className="md:px-2 md:py-1   md:bg-green-400 md:text-white md:rounded-3xl md:hover:bg-green-500 text-green-500 focus:outline-none  hover:scale-125 transition-all duration-500"
+                  >
+                    <FontAwesomeIcon icon={faCheck} />
+                  </button>
+
+                  {/* Close Button */}
+                  <button
+                    onClick={() => setShowRemBtn(true)}
+                    className="md:bg-gray-200 md:px-2 md:py-1 md:rounded-3xl focus:outline-none  md:hover:bg-gray-300 hover:scale-125 transition-all duration-500"
+                  >
+                    <FontAwesomeIcon icon={faXmark} />
+                  </button>
+                </div>
+              </div>
             )}
           </div>
           <div className="flex items-center space-x-4">

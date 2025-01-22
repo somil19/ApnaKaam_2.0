@@ -27,7 +27,7 @@ export default function Welcome() {
         {" "}
         <div className="max-w-3xl mx-auto px-4">
           {" "}
-          <h1 className="text-4xl lg:text-5xl text-center capitalize text-white font-bold tracking-wide">
+          <h1 className="text-3xl md:text-5xl text-center capitalize text-white font-bold tracking-wide">
             {" "}
             Welcome, {userName} !{" "}
           </h1>{" "}

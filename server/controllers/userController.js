@@ -140,17 +140,36 @@ export const updateAvatar = async (req, res) => {
   }
 };
 
-export const scheduleEmail = async (req, res) => {
-  const { toEmail, subject, body, sendTime } = req.body;
-
+export const updatUserName = async (req, res) => {
   try {
-    sendEmail(toEmail, subject, body, sendTime);
+    const { userName } = req.body;
+    console.log(userName);
+    const userId = req.body?.userId;
+    const user = await User.findById(userId);
+    user.name = userName;
+    await user.save();
+    return res
+      .status(200)
+      .json({ success: true, message: "Your name has been updated " });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const scheduleEmail = async (req, res) => {
+  const { email, title, category, name, sendTime } = req.body;
+  console.log(email, title, category, name, sendTime);
+  try {
+    const subject = `Reminder: ${title.toUpperCase()}`; // Email subject
+    const body = `Namaste ${name},\n\nThis is a friendly reminder for your task:\n- Title: ${title.toUpperCase()}\n- Category: ${category}\n\nDon't forget to complete your task on time!\nStay productive and Have a great day😊.\n\nBest regards,\nYour ApnaKaam Team!`;
+
+    sendEmail(email, subject, body, sendTime);
     res.status(200).send("Email scheduled successfully!");
   } catch (error) {
     res.status(500).send("Error scheduling email: " + error.message);
   }
 };
-
 export const sendResetOtp = async (req, res) => {
   const { email } = req.body;
 
@@ -232,7 +251,7 @@ export const welcomeEmail = async (req, res) => {
   const { userName, email } = req.body;
   try {
     const subject = "Welcome to ApnaKaam";
-    const body = `Dear ${userName},\n\nWelcome to Apna Kaam! 🎉\n\nWe are so excited to have you join our community. Apna Kaam is here to make task management simple and effective, helping you organize your daily activities with ease.\n\nHere’s how you can get started:\n1.Access your tasks and explore the intuitive dashboard.\n2.Create your first task – Add tasks, set priorities, and organize them with custom labels.\n3. Set reminders – Never miss a deadline with personalized emails.\n\nWe’re here to ensure your experience is seamless and productive.\n\nOnce again, welcome aboard!\n\nWarm regards,\nThe Apna Kaam Team\n\n`;
+    const body = `Namaste ${userName},\n\nWelcome to Apna Kaam! 🎉\n\nWe are so excited to have you join our community. Apna Kaam is here to make task management simple and effective, helping you organize your daily activities with ease.\n\nHere’s how you can get started:\n1.Access your tasks and explore the intuitive dashboard.\n2.Create your first task – Add tasks, set priorities, and organize them with custom labels.\n3. Set reminders – Never miss a deadline with personalized emails.\n\nWe’re here to ensure your experience is seamless and productive.\n\nOnce again, welcome aboard!\n\nWarm regards,\nYour ApnaKaam Team\n\n`;
 
     const sendTime = new Date(Date.now() + 500);
     sendEmail(email, subject, body, sendTime);

@@ -155,7 +155,7 @@ export default function TodoList({ Todos, day }) {
                 )}
               </div>{" "}
               <div className="flex items-center md:ml-4">
-                <div className="flex items-center gap-2 ">
+                <div className="flex items-center gap-3 ">
                   <button
                     onClick={() => {
                       setShowSummary(true);
@@ -165,6 +165,7 @@ export default function TodoList({ Todos, day }) {
                   >
                     <FontAwesomeIcon
                       icon={faBook}
+                      size="lg"
                       className="text-indigo-300 hover:text-indigo-600 md:text-gray-500"
                     />
                   </button>
@@ -174,6 +175,7 @@ export default function TodoList({ Todos, day }) {
                   >
                     <FontAwesomeIcon
                       icon={faFilePen}
+                      size="lg"
                       className="text-blue-300 hover:text-blue-600 md:text-gray-500"
                     />{" "}
                   </button>{" "}
@@ -184,7 +186,7 @@ export default function TodoList({ Todos, day }) {
                   >
                     <FontAwesomeIcon
                       icon={faTrashAlt}
-                      // style={{ color: "gray" }}
+                      size="lg"
                       className="text-red-400 hover:text-red-600 md:text-gray-500"
                     />
                   </button>
@@ -215,18 +217,6 @@ export default function TodoList({ Todos, day }) {
         {todosLength >= 1 && (
           <li className="mt-8 flex items-center justify-center">
             {" "}
-            {/* <button
-              onClick={() => dispatch(setFormState(true))}
-              className="text-white flex items-center justify-center bg-green-500 hover:bg-green-600 w-[80%] md:w-1/3 py-3 rounded-lg"
-            >
-              {" "}
-              <span className="text-md">Add More Todo's</span>{" "}
-              <FontAwesomeIcon
-                icon={faPlusCircle}
-                size="lg"
-                className="ml-2 hover:scale-110 transform ease-in duration-100"
-              />{" "}
-            </button>{" "} */}
             <button
               onClick={() => dispatch(setFormState(true))}
               className="rounded-lg relative w-64 h-10 cursor-pointer flex items-center border border-green-500 bg-green-500 group hover:bg-green-500 active:bg-green-500 active:border-green-500"
