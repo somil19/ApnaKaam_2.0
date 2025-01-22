@@ -8,8 +8,7 @@ import todoRouter from "./routes/todoRoute.js";
 
 app.use(
   cors({
-    origin:
-      "https://apna-kaam-2-0-tiar-2j3v0ewql-somil19s-projects.vercel.app/",
+    origin: "https://apna-kaam-2-0-tiar-2j3v0ewql-somil19s-projects.vercel.app",
     methods: ["GET", "POST", "DELETE"],
     credentials: true,
   })
