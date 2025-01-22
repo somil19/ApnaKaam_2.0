@@ -6,7 +6,13 @@ const app = express();
 import userRouter from "./routes/userRoute.js";
 import todoRouter from "./routes/todoRoute.js";
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "apna-kaam-2-0-tiar-qji4v4odf-somil19s-projects.vercel.app",
+    methods: ["GET", "POST", "DELETE"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use("/api/user", userRouter);
 app.use("/api/todo", todoRouter);
